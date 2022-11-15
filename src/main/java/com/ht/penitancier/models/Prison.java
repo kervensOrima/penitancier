@@ -33,11 +33,12 @@ public class Prison implements Serializable {
     @Column(name = "city", length = 100, nullable = false)
     String city ;
 
-    @DateTimeFormat( iso = DateTimeFormat.ISO.DATE_TIME ,pattern = "yyyy-MM-dd hh:mm:ss")
-    @Column(name = "date_enregistrement", nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @Column(name = "date_enregistrement", nullable = false, updatable = false, insertable = true)
     Date created;
 
     @Column(name = "status", length = 100, nullable = false)
+    @Enumerated(EnumType.STRING)
     PrisonEtatType status ;
 
     @Column(name = "roomNumbers", nullable = false)

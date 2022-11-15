@@ -38,6 +38,6 @@ public abstract class Person implements Serializable {
      @Column(name = "birthDate")
      Date birthDate ;
 
-     @Column(name = "cin", unique = true, nullable = false, updatable = true, length = 20)
+     @Column(name = "cin", unique = false, nullable = false, updatable = true, length = 20)
      String cin ;
 }

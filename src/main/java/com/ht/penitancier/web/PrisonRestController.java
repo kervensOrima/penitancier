@@ -1,15 +1,14 @@
 package com.ht.penitancier.web;
 
 import com.ht.penitancier.dtos.PrisonDTO;
-import com.ht.penitancier.services.IPrison;
 import com.ht.penitancier.services.serviceImpl.PrisonServiceImpl;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -23,23 +22,41 @@ public class PrisonRestController {
 
     PrisonServiceImpl prisonService;
 
-    public ResponseEntity<PrisonDTO>  add(@Valid PrisonDTO request) {
-        return null;
+    @PostAuthorize("hasAnyAuthority('JUGE', 'ADMINISTRATEUR')")
+    @PostMapping(path = "", name = "add new prison", consumes = "application/json")
+    public ResponseEntity<PrisonDTO>  add(@Valid @RequestBody(required = true) PrisonDTO request) {
+        return new ResponseEntity<>( this.prisonService.add( request), HttpStatus.CREATED );
     }
 
-    public ResponseEntity<PrisonDTO> update(@Valid PrisonDTO request, Long id) {
-        return null;
+    @PostAuthorize("hasAnyAuthority('JUGE', 'ADMINISTRATEUR')")
+    @RequestMapping( method = RequestMethod.PATCH, path = "/{id}", name = "update prison")
+    public ResponseEntity<PrisonDTO> update(@Valid @RequestBody(required = true) PrisonDTO request,
+                                            @PathVariable(required = true, name = "id") Long id) {
+        return new ResponseEntity<>( this.prisonService.update(request, id), HttpStatus.ACCEPTED );
     }
 
-    public void changeStatus(Long id) {
-
+    @PostAuthorize("hasAnyAuthority('DIRECTEUR', 'ADMINISTRATEUR')")
+    @PatchMapping(name = "changeStatus", path = "change-status/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void changeStatus(@PathVariable(name = "id", required = true) Long id) {
+      this.prisonService.changeStatus(id);
     }
 
+    @PostAuthorize("hasAnyAuthority('DIRECTEUR', 'ADMINISTRATEUR', 'JUGE')")
+    @GetMapping(path = "")
     public ResponseEntity<List<PrisonDTO>> prisons() {
-        return null;
+        return new ResponseEntity<>( this.prisonService.prisons(), HttpStatus.OK);
     }
 
+    @PostAuthorize("hasAnyAuthority('DIRECTEUR', 'ADMINISTRATEUR', 'JUGE', 'POLICIER_APENAH')")
+    @GetMapping(path = "count")
     public ResponseEntity<Long> count() {
-        return null;
+        return new ResponseEntity<>(this.prisonService.count(), HttpStatus.OK);
+    }
+
+    @PostAuthorize("hasAnyAuthority('DIRECTEUR', 'ADMINISTRATEUR', 'JUGE')")
+    @GetMapping(path = "{id}", name = "find prison by id")
+    public ResponseEntity<PrisonDTO> findById(@PathVariable(name = "id") Long id) {
+        return  new ResponseEntity<>( this.prisonService.findById(id), HttpStatus.OK) ;
     }
 }

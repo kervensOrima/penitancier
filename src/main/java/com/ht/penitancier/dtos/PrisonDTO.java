@@ -4,12 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ht.penitancier.utils.enums.PrisonEtatType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -23,26 +19,41 @@ import java.util.Date;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PrisonDTO  implements Serializable {
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     Long id ;
 
-    @NotBlank(message = "name is required")
-            @NotEmpty(message = "name is required")
-            @Size(max = 100, min = 2)
+    @NotBlank(message = "name must not be blank")
+    @Size(max = 100, min = 2, message = "name Size error")
     String name ;
 
+    @NotBlank(message = "department must not be blank")
+    @Size(max = 100, min = 2, message = "department Size error")
     String department ;
 
+    @NotBlank(message = "city must not be blank")
+    @Size(max = 100, min = 2, message = "city Size error")
     String city ;
 
-    PrisonEtatType status ;
-
+    @Min(message = "Room number is invalid", value = 1)
+    @Max(message = "Room number is invalid", value = 100_000_000)
     Integer roomNumbers;
 
+    @Min(message = "guard numbers number is invalid", value = 1)
+    @Max(message = "guard numbers number is invalid", value = 100_000_000)
     Integer guardNumbers ;
 
+    @NotBlank(message = "chef must not be blank")
+    @Size(max = 100, min = 2, message = "chef Size error")
     String chef ;
 
+    @NotBlank(message = "chef phone number must not be blank")
+    @Size(max = 20, min = 8, message = "chef_phone Size error")
     String chef_phone ;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    PrisonEtatType status;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    Date created ;
 
 }
